@@ -7,6 +7,7 @@ import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 
 import { EmployeeController } from './employee.controller';
 import { EmployeeService } from './employee.service';
+import { FileService } from '@shared/file';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { EmployeeService } from './employee.service';
     }),
   ],
   controllers: [EmployeeController],
-  providers: [EmployeeService],
+  providers: [EmployeeService, FileService],
 })
 export class EmployeeModule {}

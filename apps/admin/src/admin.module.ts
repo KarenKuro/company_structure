@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
   ADMIN_VALIDATIONS,
@@ -13,11 +15,12 @@ import {
   UserEntity,
 } from '@common/index';
 
+import { join } from 'path';
+
+import { EmployeeModule } from '@admin-resources/employee';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './resources/auth/auth.module';
-import { EmployeeModule } from '@admin-resources/employee';
 
 const isProductionMode = process.env.NODE_ENV === NodeEnv.production;
 
@@ -27,6 +30,10 @@ const envFilePath = isProductionMode
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', '..', 'uploads'), // Путь к папке uploads
+      serveRoot: '/uploads', // URL-адрес, по которому файлы будут доступны
+    }),
     ConfigModule.forRoot({
       envFilePath,
       isGlobal: true,
