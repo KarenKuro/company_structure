@@ -42,6 +42,6 @@ export class AuthController {
     @AuthToken() refreshToken: string,
     @AuthUser() user: IRefreshPayload,
   ): Promise<AuthTokensDTO> {
-    return this._authService.refreshAccessToken(user.id, refreshToken);
+    return this._authService.refreshAccessToken(user.id, user.isAdmin, refreshToken);
   }
 }

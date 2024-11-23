@@ -7,3 +7,4 @@ export * from './validators';
 export * from './database';
 export * from './guards';
 export * from './decorators';
+export * from './dtos';

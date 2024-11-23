@@ -50,7 +50,6 @@ export const AuthUserGuard = (tokenType: TokenTypes = TokenTypes.PRIMARY) => {
       try {
         await this.jwtService.verify(accessToken, options);
         const payload = this.jwtService.decode(accessToken) as ITokenPayload;
-
         request.user = payload;
         return true;
       } catch (e) {

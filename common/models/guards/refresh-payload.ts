@@ -3,4 +3,5 @@ export interface IRefreshPayload {
   jti: string;
   iat: number;
   exp: number;
+  isAdmin: boolean;
 }

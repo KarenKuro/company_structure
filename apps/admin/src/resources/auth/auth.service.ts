@@ -44,9 +44,12 @@ export class AuthService {
       isAdmin,
     })) as UserEntity;
 
-    const payload = { id: createdUser.id };
+    const payload = { id: createdUser.id, isAdmin: createdUser.isAdmin };
     const accessToken = await this.createAccessToken(payload);
-    const refreshToken = await this.createRefreshToken(createdUser.id);
+    const refreshToken = await this.createRefreshToken(
+      createdUser.id,
+      createdUser.isAdmin,
+    );
 
     return { accessToken, refreshToken };
   }
@@ -55,11 +58,11 @@ export class AuthService {
     return this._jwtService.sign(payload);
   }
 
-  async createRefreshToken(id: number): Promise<string> {
+  async createRefreshToken(id: number, isAdmin: boolean): Promise<string> {
     const refreshToken = uuid();
 
     return this._jwtService.sign(
-      { id, jti: refreshToken },
+      { id, isAdmin, jti: refreshToken },
       {
         secret: this.jwtSecrets.refreshSecret,
         expiresIn: this.jwtSecrets.refreshExpiresIn,
@@ -69,11 +72,12 @@ export class AuthService {
 
   async refreshAccessToken(
     id: number,
+    isAdmin: boolean,
     refreshToken: string,
   ): Promise<IAuthTokens> {
     refreshToken = refreshToken?.replace('Bearer', '')?.trim();
 
-    const accessToken = await this.createAccessToken({ id });
+    const accessToken = await this.createAccessToken({ id, isAdmin });
 
     return { accessToken, refreshToken };
   }

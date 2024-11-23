@@ -5,6 +5,8 @@ import {
   ADMIN_VALIDATIONS,
   appConfig,
   databaseConfiguration,
+  DepatrmentEntity,
+  EmployeeEntity,
   ENV_CONST,
   jwtConfig,
   NodeEnv,
@@ -15,6 +17,7 @@ import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './resources/auth/auth.module';
+import { EmployeeModule } from '@admin-resources/employee';
 
 const isProductionMode = process.env.NODE_ENV === NodeEnv.production;
 
@@ -32,7 +35,7 @@ const envFilePath = isProductionMode
       load: [databaseConfiguration, jwtConfig, appConfig],
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, AuthModule],
+      imports: [ConfigModule, AuthModule, EmployeeModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
@@ -46,11 +49,12 @@ const envFilePath = isProductionMode
           // Do not use synchronize in production mode
           // https://docs.nestjs.com/techniques/database
           synchronize: configService.get<boolean>(`DB_CONFIG.sync`),
-          entities: [UserEntity],
+          entities: [UserEntity, EmployeeEntity, DepatrmentEntity],
         };
       },
     }),
     AuthModule,
+    EmployeeModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],
