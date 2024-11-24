@@ -1,14 +1,16 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { AdminModule } from './admin.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import {
   ClassSerializerInterceptor,
   HttpStatus,
   ValidationPipe,
 } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import { IValidationErrors } from '@common/models';
 import { ResponseManager } from '@common/helpers';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import { AdminModule } from './admin.module';
 
 const PORT = process.env.PORT;
 
