@@ -5,7 +5,7 @@ import {
   Entity,
   Index,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DepatrmentEntity } from './department.entity';
@@ -40,7 +40,7 @@ export class EmployeeEntity {
   @Column()
   age: number;
 
-  @OneToOne(() => DepatrmentEntity)
+  @ManyToOne(() => DepatrmentEntity)
   @JoinColumn({name: 'department_id'})
   department: DepatrmentEntity;
 }

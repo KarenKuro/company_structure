@@ -3,5 +3,5 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AllDepartmentsResponseDTO {
   @ApiProperty()
-  departments: DepartmentWithStatsResponseDTO;
+  departments: DepartmentWithStatsResponseDTO[];
 }

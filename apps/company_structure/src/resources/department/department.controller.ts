@@ -11,7 +11,7 @@ export class DepartmentController {
   @Get()
   @ApiOperation({ summary: 'Get all departments' })
   async findAll(): Promise<AllDepartmentsResponseDTO> {
-    
-    return null;
+    const allDepartments = await this._departmentService.findAll();
+    return allDepartments;
   }
 }
