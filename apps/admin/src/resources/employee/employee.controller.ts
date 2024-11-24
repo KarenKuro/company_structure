@@ -1,9 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
   HttpStatus,
   InternalServerErrorException,
   Param,
@@ -127,24 +125,5 @@ export class EmployeeController {
       console.error(err);
       throw new InternalServerErrorException('Failed to update employee');
     }
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({
-    summary: 'Delete employee by id. Для удобства проверки оставил этот метод',
-  })
-  async remove(
-    @AuthUser() user: ITokenPayload,
-    @Param() param: IdDTO,
-  ): Promise<void> {
-    if (!user.isAdmin) {
-      throw ResponseManager.buildError(
-        ERROR_MESSAGES.USER_IS_NOT_ADMIN,
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
-    await this._employeeService.remove({ id: +param.id });
   }
 }

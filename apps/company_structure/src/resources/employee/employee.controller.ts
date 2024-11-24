@@ -1,4 +1,3 @@
-import { AuthUserGuard } from '@common/guards';
 import {
   Body,
   Controller,
@@ -21,15 +20,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileService } from '@shared/file';
-import { CreateEmployeeDTO } from './dto';
+
+import { AuthUserGuard } from '@common/guards';
 import { IdDTO, SuccessDTO } from '@common/dtos';
-import { AuthUser } from '@common/decorators';
-import { ITokenPayload } from '@common/models';
 import { Folder } from '@common/enums';
+
+import { FileService } from '@shared/file';
+
+import { CreateEmployeeDTO } from './dto';
 import { EmployeeService } from './employee.service';
-import { ResponseManager } from '@common/helpers';
-import { ERROR_MESSAGES } from '@common/messages';
 
 @Controller('employee')
 @UseGuards(AuthUserGuard())
@@ -106,6 +105,7 @@ export class EmployeeController {
   })
   async remove(@Param() param: IdDTO): Promise<SuccessDTO> {
     await this._employeeService.remove({ id: +param.id });
+
     return { success: true };
   }
 }

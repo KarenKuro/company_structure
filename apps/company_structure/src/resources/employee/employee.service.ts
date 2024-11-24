@@ -1,16 +1,14 @@
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { Repository } from 'typeorm';
+
 import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 import { FileHelpers, ResponseManager } from '@common/helpers';
 import { ERROR_MESSAGES } from '@common/messages';
 import { IEmployee } from '@common/models';
-import {
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+
 import { FileService } from '@shared/file';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class EmployeeService {
@@ -96,32 +94,41 @@ export class EmployeeService {
         lastName: body.lastName,
         photo: filePath,
         jobTitle: body.jobTitle,
-        salary: body.salary,
-        age: body.age,
-        department: body.department as Partial<DepatrmentEntity>,
+        salary: +body.salary,
+        age: +body.age,
+        department: +body.department as Partial<DepatrmentEntity>,
       });
     } catch (err) {
       const removedFilePath = FileHelpers.removeHostFromPath(filePath);
       await this._fileService.removeFile(removedFilePath);
 
-      console.error(err);
       throw ResponseManager.buildError(
-        ERROR_MESSAGES.DEPARTMENT_ALREADY_EXISTS,
+        ERROR_MESSAGES.FAILED_TO_CREATE_EMPLOYEE,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
 
   async remove(param: Partial<IEmployee>): Promise<IEmployee> {
-    const employee = await this.findOne({ id: param.id });
+    try {
+      const employee = await this.findOne({ id: param.id });
 
-    if (!employee) {
-      throw new NotFoundException(`Employee with id ${param.id} not found`);
+      if (!employee || !employee.photo) {
+        throw ResponseManager.buildError(
+          ERROR_MESSAGES.EMPLOYEE_NOT_EXISTS,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const removedFilePath = FileHelpers.removeHostFromPath(employee.photo);
+      await this._fileService.removeFile(removedFilePath);
+
+      await this._employeeRepository.delete(param.id);
+      return employee;
+    } catch (err) {
+      throw ResponseManager.buildError(
+        ERROR_MESSAGES.FAILED_TO_REMOVE_EMPLOYEE,
+      );
     }
-
-    const removedFilePath = FileHelpers.removeHostFromPath(employee.photo);
-    await this._fileService.removeFile(removedFilePath);
-
-    await this._departmentRepository.delete({ id: param.id });
-    return employee;
   }
 }

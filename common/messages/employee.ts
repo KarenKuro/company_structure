@@ -5,4 +5,13 @@ export const EMPLOYEE_ERROR_MESSAGES = {
   DIRECTOR_NOT_EXISTS: {
     message: 'err_director_not_exists',
   },
+  FAILED_TO_CREATE_EMPLOYEE: {
+    message: 'failed_to_create_employee',
+  },
+  FAILED_TO_UPDATE_EMPLOYEE: {
+    message: 'failed_to_update_employee',
+  },
+  FAILED_TO_REMOVE_EMPLOYEE: {
+    message: 'failed_to_remove_employee',
+  },
 };

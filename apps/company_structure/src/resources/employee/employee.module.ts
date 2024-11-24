@@ -1,11 +1,14 @@
-import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { FileService } from '@shared/file';
+
+import { DepatrmentEntity, EmployeeEntity } from '@common/database';
+
 import { EmployeeController } from './employee.controller';
 import { EmployeeService } from './employee.service';
-import { FileService } from '@shared/file';
 
 @Module({
   imports: [

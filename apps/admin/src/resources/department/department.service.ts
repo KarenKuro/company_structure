@@ -61,8 +61,10 @@ export class DepartmentService {
         director: newDirector,
       });
     } catch (err) {
-      console.error(err);
-      throw new InternalServerErrorException('Failed to update department');
+      throw ResponseManager.buildError(
+        ERROR_MESSAGES.FAILED_TO_UPDATE_DEPARTMENT,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

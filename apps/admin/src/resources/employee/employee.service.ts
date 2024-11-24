@@ -1,7 +1,6 @@
 import {
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -63,17 +62,15 @@ export class EmployeeService {
         lastName: body.lastName,
         photo: filePath,
         jobTitle: body.jobTitle,
-        salary: body.salary,
-        age: body.age,
-        department: body.department as Partial<DepatrmentEntity>,
+        salary: +body.salary,
+        age: +body.age,
+        department: +body.department as Partial<DepatrmentEntity>,
       });
     } catch (err) {
-      console.error(err);
-      throw new InternalServerErrorException('Failed to update employee');
+      throw ResponseManager.buildError(
+        ERROR_MESSAGES.FAILED_TO_UPDATE_EMPLOYEE,
+        HttpStatus.BAD_REQUEST,
+      );
     }
-  }
-
-  async remove(employee: Partial<IEmployee>): Promise<void> {
-    await this._employeeRepository.delete(employee.id);
   }
 }
