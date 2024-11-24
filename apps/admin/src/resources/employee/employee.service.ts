@@ -65,7 +65,7 @@ export class EmployeeService {
         jobTitle: body.jobTitle,
         salary: body.salary,
         age: body.age,
-        department: body.department.toString() as Partial<DepatrmentEntity>,
+        department: body.department as Partial<DepatrmentEntity>,
       });
     } catch (err) {
       console.error(err);

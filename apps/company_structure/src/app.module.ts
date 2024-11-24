@@ -11,10 +11,10 @@ import { API_VALIDATIONS } from '@common/validators';
 
 import { join } from 'path';
 
-import { DepartmentModule } from '@company_structure-resources/department';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DepartmentModule, EmployeeModule } from './resources';
 
 const isProductionMode = process.env.NODE_ENV === NodeEnv.production;
 
@@ -36,7 +36,7 @@ const envFilePath = isProductionMode
       load: [databaseConfiguration, jwtConfig, appConfig],
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, DepartmentModule],
+      imports: [ConfigModule, DepartmentModule, EmployeeModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
@@ -55,6 +55,7 @@ const envFilePath = isProductionMode
       },
     }),
     DepartmentModule,
+    EmployeeModule
   ],
   controllers: [AppController],
   providers: [AppService],
