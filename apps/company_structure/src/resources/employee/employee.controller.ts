@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseFilePipeBuilder,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -17,18 +19,28 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { AuthUserGuard } from '@common/guards';
-import { IdDTO, SuccessDTO } from '@common/dtos';
+import {
+  EmployeeResponseDTO,
+  IdDTO,
+  LastNameQueryDTO,
+  PaginationQueryDTO,
+  SuccessDTO,
+} from '@common/dtos';
 import { Folder } from '@common/enums';
 
 import { FileService } from '@shared/file';
 
 import { CreateEmployeeDTO } from './dto';
 import { EmployeeService } from './employee.service';
+import { DepartmentService } from '@company_structure-resources/department';
+import { FileHelpers, ResponseManager } from '@common/helpers';
+import { ERROR_MESSAGES } from '@common/messages';
 
 @Controller('employee')
 @UseGuards(AuthUserGuard())
@@ -37,30 +49,82 @@ import { EmployeeService } from './employee.service';
 export class EmployeeController {
   constructor(
     private readonly _employeeService: EmployeeService,
+    private readonly _departmentService: DepartmentService,
     private readonly _fileService: FileService,
   ) {}
 
-  // @Get(':id')
-  // @ApiOperation({ summary: 'Get employee by id' })
-  // async findOneById(
-  //   @AuthUser() user: ITokenPayload,
-  //   @Param() param: IdDTO,
-  // ): Promise<EmployeeResponseDTO> {
-  //   if (!user.isAdmin) {
-  //     throw ResponseManager.buildError(
-  //       ERROR_MESSAGES.USER_IS_NOT_ADMIN,
-  //       HttpStatus.FORBIDDEN,
-  //     );
-  //   }
+  @Get('lastname')
+  @ApiOperation({ summary: 'Get employee by LastName' })
+  async findByLastName(
+    @Query() query: LastNameQueryDTO,
+  ): Promise<EmployeeResponseDTO[]> {
+    const employees = await this._employeeService.findByName({
+      lastName: query.lastName,
+    });
 
-  //   const employee = await this._employeeService.findOne({ id: +param.id });
+    const employeesWithCorrectFilePath = employees.map((employee) => {
+      if (employee.photo) {
+        employee.photo = FileHelpers.generatePath(employee.photo);
+      }
+      return employee;
+    });
 
-  //   if (employee.photo) {
-  //     employee.photo = FileHelpers.generatePath(employee.photo);
-  //   }
+    return employeesWithCorrectFilePath;
+  }
 
-  //   return employee;
-  // }
+  @Get('department/:id')
+  @ApiOperation({ summary: 'Get employees by department id' })
+  async findByDepartment(
+    @Param() param: IdDTO,
+  ): Promise<EmployeeResponseDTO[]> {
+    await this._departmentService.findOne({ id: +param.id });
+
+    const employees = await this._employeeService.findByDepartment({
+      id: +param.id,
+    });
+
+    const employeesWithCorrectFilePath = employees.map((employee) => {
+      if (employee.photo) {
+        employee.photo = FileHelpers.generatePath(employee.photo);
+      }
+      return employee;
+    });
+
+    return employeesWithCorrectFilePath;
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all employees' })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    type: Number,
+    description: 'Number of employees to skip',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Maximum number of employees to return',
+  })
+  async findAll(
+    @Query() pagination: PaginationQueryDTO,
+  ): Promise<EmployeeResponseDTO[]> {
+    const employees = await this._employeeService.findAll(pagination);
+
+    if (!employees.length) {
+      throw ResponseManager.buildError(ERROR_MESSAGES.EMPLOYEES_NOT_EXISTS);
+    }
+
+    const employeesWithCorrectFilePath = employees.map((employee) => {
+      if (employee.photo) {
+        employee.photo = FileHelpers.generatePath(employee.photo);
+      }
+      return employee;
+    });
+
+    return employeesWithCorrectFilePath;
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('photo'))

@@ -10,6 +10,8 @@ import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 import { EmployeeController } from './employee.controller';
 import { EmployeeService } from './employee.service';
 
+import { DepartmentService } from '@company_structure-resources/department';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([EmployeeEntity, DepatrmentEntity]),
@@ -26,6 +28,6 @@ import { EmployeeService } from './employee.service';
     }),
   ],
   controllers: [EmployeeController],
-  providers: [EmployeeService, FileService],
+  providers: [EmployeeService, FileService, DepartmentService],
 })
 export class EmployeeModule {}

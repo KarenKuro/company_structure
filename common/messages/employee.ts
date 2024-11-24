@@ -14,4 +14,7 @@ export const EMPLOYEE_ERROR_MESSAGES = {
   FAILED_TO_REMOVE_EMPLOYEE: {
     message: 'failed_to_remove_employee',
   },
+  EMPLOYEES_NOT_EXISTS: {
+    message: 'err_employees_not_exists',
+  },
 };

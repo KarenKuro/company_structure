@@ -1,7 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import { DepartmentService } from './department.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AllDepartmentsResponseDTO } from './dto/all-departments-response.dto';
+
+import { DepartmentService } from './department.service';
+import { AllDepartmentsResponseDTO } from './dto';
 
 @Controller('department')
 @ApiTags('department')

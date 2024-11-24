@@ -6,11 +6,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 
-import { DepartmentService } from '@admin-resources/department';
 import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 import { IEmployee } from '@common/models';
 import { ResponseManager } from '@common/helpers';
 import { ERROR_MESSAGES } from '@common/messages';
+
+import { DepartmentService } from '@company_structure-resources/department';
 
 @Injectable()
 export class EmployeeService {

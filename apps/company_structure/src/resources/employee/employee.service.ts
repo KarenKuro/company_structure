@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 import { FileHelpers, ResponseManager } from '@common/helpers';
 import { ERROR_MESSAGES } from '@common/messages';
-import { IEmployee } from '@common/models';
+import { IEmployee, IPagination } from '@common/models';
 
 import { FileService } from '@shared/file';
 
@@ -21,6 +21,29 @@ export class EmployeeService {
 
     private readonly _fileService: FileService,
   ) {}
+
+  async findAll(pagination: IPagination): Promise<IEmployee[]> {
+    const { offset, limit } = pagination;
+    const employees = await this._employeeRepository.find({
+      skip: +offset,
+      take: +limit,
+      relations: ['department'],
+    });
+
+    if (!employees.length) {
+      throw (
+        (ResponseManager.buildError(ERROR_MESSAGES.EMPLOYEES_NOT_EXISTS),
+        HttpStatus.BAD_REQUEST)
+      );
+    }
+
+    const correctEmployees = employees.map((employee) => {
+      const departmentId = employee.department?.id ?? null;
+      return { ...employee, department: departmentId };
+    });
+
+    return correctEmployees;
+  }
 
   async findOne(param: Partial<IEmployee>): Promise<IEmployee> {
     const employee = await this._employeeRepository.findOne({
@@ -39,38 +62,41 @@ export class EmployeeService {
     return { ...employee, department: departmentId };
   }
 
-  async findOneByName(param: Partial<IEmployee>): Promise<IEmployee> {
-    const employee = await this._employeeRepository.findOne({
+  async findByName(param: Partial<IEmployee>): Promise<IEmployee[]> {
+    const employees = await this._employeeRepository.find({
       where: { lastName: param.lastName },
+      relations: ['department'],
     });
 
-    if (!employee) {
+    if (!employees.length) {
       throw (
-        (ResponseManager.buildError(ERROR_MESSAGES.EMPLOYEE_NOT_EXISTS),
+        (ResponseManager.buildError(ERROR_MESSAGES.EMPLOYEES_NOT_EXISTS),
         HttpStatus.BAD_REQUEST)
       );
     }
 
-    const departmentId = employee.department?.id ?? null;
+    const correctEmployees = employees.map((employee) => {
+      const departmentId = employee.department?.id ?? null;
+      return { ...employee, department: departmentId };
+    });
 
-    return { ...employee, department: departmentId };
+    return correctEmployees;
   }
 
-  async findOneByDepartment(param: Partial<IEmployee>): Promise<IEmployee> {
-    const employee = await this._employeeRepository.findOne({
-      where: { department: param.department as Partial<DepatrmentEntity> },
+  async findByDepartment(param: Partial<IEmployee>): Promise<IEmployee[]> {
+    const employees = await this._employeeRepository.find({
+      where: {
+        department: { id: +param.id },
+      },
+      relations: ['department'],
     });
 
-    if (!employee) {
-      throw (
-        (ResponseManager.buildError(ERROR_MESSAGES.EMPLOYEE_NOT_EXISTS),
-        HttpStatus.BAD_REQUEST)
-      );
-    }
+    const correctEmployees = employees.map((employee) => {
+      const departmentId = employee.department?.id ?? null;
+      return { ...employee, department: departmentId };
+    });
 
-    const departmentId = employee.department?.id ?? null;
-
-    return { ...employee, department: departmentId };
+    return correctEmployees;
   }
 
   async create(body: Partial<IEmployee>, path: string) {

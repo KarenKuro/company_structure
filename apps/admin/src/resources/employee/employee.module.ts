@@ -7,10 +7,11 @@ import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 
 import { FileService } from '@shared/file';
 
+import { DepartmentService } from '@company_structure-resources/department';
+
 import { EmployeeController } from './employee.controller';
 import { EmployeeService } from './employee.service';
 
-import { DepartmentService } from '@admin-resources/department';
 
 @Module({
   imports: [

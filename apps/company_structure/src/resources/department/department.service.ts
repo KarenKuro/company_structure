@@ -1,8 +1,12 @@
-import { DepatrmentEntity, EmployeeEntity } from '@common/database';
-import { IAllDepartments } from '@common/models';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { DataSource, Repository } from 'typeorm';
+
+import { DepatrmentEntity, EmployeeEntity } from '@common/database';
+import { ResponseManager } from '@common/helpers';
+import { ERROR_MESSAGES } from '@common/messages';
+import { IAllDepartments, IDepartment } from '@common/models';
 
 @Injectable()
 export class DepartmentService {
@@ -38,5 +42,22 @@ export class DepartmentService {
     }));
 
     return { departments: allDepartmentsWithStats };
+  }
+
+  async findOne(param: Partial<IDepartment>): Promise<IDepartment> {
+    const department = await this._departmentRepository.findOne({
+      where: { id: param.id },
+    });
+
+    if (!department) {
+      throw (
+        (ResponseManager.buildError(ERROR_MESSAGES.DEPARTMENT_NOT_EXISTS),
+        HttpStatus.BAD_REQUEST)
+      );
+    }
+
+    const directorId = department.director?.id ?? null;
+
+    return { ...department, director: directorId };
   }
 }
