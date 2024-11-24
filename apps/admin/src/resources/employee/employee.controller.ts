@@ -73,7 +73,11 @@ export class EmployeeController {
   @ApiOperation({ summary: 'Update employee by id' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Update employee and upload file',
+    description: `Update employee and upload new photo. 
+    ATTENTION!
+    It is necessary to add the field "photo" to the fields from the DTO, the value of which will be the uploaded file
+    FileTypes: .(jpg | jpeg | png | xml | svg)
+    `,
     type: UpdateEmployeeDTO,
   })
   @ApiResponse({ status: 201, type: SuccessDTO })
