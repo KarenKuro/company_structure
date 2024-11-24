@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Param,
   ParseFilePipeBuilder,
   Put,
@@ -64,13 +65,6 @@ export class EmployeeController {
       employee.photo = FileHelpers.generatePath(employee.photo);
     }
 
-    if (!employee) {
-      throw (
-        (ResponseManager.buildError(ERROR_MESSAGES.EMPLOYEE_NOT_EXISTS),
-        HttpStatus.BAD_REQUEST)
-      );
-    }
-
     return employee;
   }
 
@@ -102,16 +96,33 @@ export class EmployeeController {
     )
     file: Express.Multer.File,
   ): Promise<SuccessDTO> {
+    if (!user.isAdmin) {
+      throw ResponseManager.buildError(
+        ERROR_MESSAGES.USER_IS_NOT_ADMIN,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const employee = await this.findOneById(user, param);
-    
-    const removedFilePath = FileHelpers.removeHostFromPath(employee.photo);
-    await this._fileService.removeFile(removedFilePath);
 
-    const filePath = await this._fileService.saveFile(file, Folder.EMPLOYEE);
+    let filePath: string;
 
-    await this._employeeService.update(employee, body, filePath);
+    try {
+      filePath = await this._fileService.saveFile(file, Folder.EMPLOYEE);
+      await this._employeeService.update(employee, body, filePath);
 
-    return { success: true };
+      const removedFilePath = FileHelpers.removeHostFromPath(employee.photo);
+      await this._fileService.removeFile(removedFilePath);
+
+      return { success: true };
+    } catch (err) {
+      if (filePath) {
+        await this._fileService.removeFile(filePath);
+      }
+
+      console.error(err);
+      throw new InternalServerErrorException('Failed to update employee');
+    }
   }
 
   @Delete(':id')

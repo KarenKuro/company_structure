@@ -5,9 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { DepatrmentEntity, EmployeeEntity } from '@common/database';
 
+import { FileService } from '@shared/file';
+
 import { EmployeeController } from './employee.controller';
 import { EmployeeService } from './employee.service';
-import { FileService } from '@shared/file';
+
+import { DepartmentService } from '@admin-resources/department';
 
 @Module({
   imports: [
@@ -25,6 +28,6 @@ import { FileService } from '@shared/file';
     }),
   ],
   controllers: [EmployeeController],
-  providers: [EmployeeService, FileService],
+  providers: [EmployeeService, FileService, DepartmentService],
 })
 export class EmployeeModule {}

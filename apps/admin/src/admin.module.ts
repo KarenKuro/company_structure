@@ -21,6 +21,7 @@ import { EmployeeModule } from '@admin-resources/employee';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { AuthModule } from './resources/auth/auth.module';
+import { DepartmentModule } from '@admin-resources/department';
 
 const isProductionMode = process.env.NODE_ENV === NodeEnv.production;
 
@@ -42,7 +43,7 @@ const envFilePath = isProductionMode
       load: [databaseConfiguration, jwtConfig, appConfig],
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, AuthModule, EmployeeModule],
+      imports: [ConfigModule, AuthModule, EmployeeModule, DepartmentModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
@@ -62,6 +63,7 @@ const envFilePath = isProductionMode
     }),
     AuthModule,
     EmployeeModule,
+    DepartmentModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],
