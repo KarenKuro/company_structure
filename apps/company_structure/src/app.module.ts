@@ -1,13 +1,16 @@
-import { appConfig, databaseConfiguration, jwtConfig } from '@common/config';
-import { ENV_CONST } from '@common/constants';
-import { DepatrmentEntity, EmployeeEntity, UserEntity } from '@common/database';
-import { NodeEnv } from '@common/enums';
-import { API_VALIDATIONS } from '@common/validators';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { DepatrmentEntity, EmployeeEntity, UserEntity } from '@common/database';
+import { appConfig, databaseConfiguration, jwtConfig } from '@common/config';
+import { ENV_CONST } from '@common/constants';
+import { NodeEnv } from '@common/enums';
+import { API_VALIDATIONS } from '@common/validators';
+
 import { join } from 'path';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 

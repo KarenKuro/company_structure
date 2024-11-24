@@ -131,7 +131,9 @@ export class EmployeeController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete employee by id' })
+  @ApiOperation({
+    summary: 'Delete employee by id. Для удобства проверки оставил этот метод',
+  })
   async remove(
     @AuthUser() user: ITokenPayload,
     @Param() param: IdDTO,

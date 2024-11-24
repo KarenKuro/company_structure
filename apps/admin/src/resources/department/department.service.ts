@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 
-import { IDepartment } from '@common/models';
+import { ICreateDepartment, IDepartment } from '@common/models';
 import { ERROR_MESSAGES } from '@common/messages';
 import { ResponseManager } from '@common/helpers';
 import { DepatrmentEntity, EmployeeEntity } from '@common/database';
@@ -40,7 +40,10 @@ export class DepartmentService {
     return { ...department, director: directorId };
   }
 
-  async update(department: IDepartment, body: Partial<IDepartment>) {
+  async update(
+    department: IDepartment,
+    body: Partial<IDepartment>,
+  ): Promise<void> {
     try {
       const newDirector = await this._employeeRepository.findOne({
         where: { id: body.director as number },
@@ -60,6 +63,41 @@ export class DepartmentService {
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException('Failed to update department');
+    }
+  }
+
+  async create(body: ICreateDepartment): Promise<void> {
+    if (body.director) {
+      const existingDirector = await this._employeeRepository.findOne({
+        where: { id: body.director },
+      });
+
+      if (!existingDirector) {
+        throw ResponseManager.buildError(
+          ERROR_MESSAGES.DIRECTOR_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    const existingDepartmentName = await this._departmentRepository.findOne({
+      where: { name: body.name },
+    });
+
+    if (existingDepartmentName) {
+      throw ResponseManager.buildError(
+        ERROR_MESSAGES.DEPARTMENT_ALREADY_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (body.director) {
+      (await this._departmentRepository.save({
+        name: body.name,
+        director: body.director as EmployeeEntity | unknown,
+      })) as DepatrmentEntity;
+    } else {
+      await this._departmentRepository.save({ name: body.name });
     }
   }
 }

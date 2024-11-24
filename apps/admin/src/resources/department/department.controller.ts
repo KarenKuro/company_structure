@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
@@ -21,7 +22,7 @@ import { AuthUser } from '@common/decorators';
 import { DepartmentResponseDTO, IdDTO, SuccessDTO } from '@common/dtos';
 import { ResponseManager } from '@common/helpers';
 import { ERROR_MESSAGES } from '@common/messages';
-import { UpdateDepartmentDTO } from './dto';
+import { CreateDepartmentDTO, UpdateDepartmentDTO } from './dto';
 
 @Controller('department')
 @UseGuards(AuthUserGuard())
@@ -70,6 +71,28 @@ export class DepartmentController {
     const department = await this.findOneById(user, param);
 
     await this._departmentService.update(department, body);
+
+    return { success: true };
+  }
+
+  // Для удобства проверки оставил этот метод
+  @Post()
+  @ApiOperation({
+    summary: 'Create department.  Для удобства проверки оставил этот метод',
+  })
+  @ApiResponse({ status: 201, type: SuccessDTO })
+  async create(
+    @AuthUser() user: ITokenPayload,
+    @Body() body: CreateDepartmentDTO,
+  ): Promise<SuccessDTO> {
+    if (!user.isAdmin) {
+      throw ResponseManager.buildError(
+        ERROR_MESSAGES.USER_IS_NOT_ADMIN,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    await this._departmentService.create(body);
 
     return { success: true };
   }

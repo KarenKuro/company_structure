@@ -13,9 +13,11 @@ import { AuthTokensDTO, CreateUserDTO } from './dto';
 export class AuthController {
   constructor(private readonly _authService: AuthService) {}
 
+  // Здесь я бы довавил ограничение, чтобы создавать нового пользователя нужно быть админом.
+  // Но для удобства проверки оставил без этого условия
   @Post()
   @ApiOperation({
-    summary: 'Create user',
+    summary: 'Create user. Для удобства проверки оставил этот метод',
   })
   @ApiResponse({
     status: 201,
@@ -42,6 +44,10 @@ export class AuthController {
     @AuthToken() refreshToken: string,
     @AuthUser() user: IRefreshPayload,
   ): Promise<AuthTokensDTO> {
-    return this._authService.refreshAccessToken(user.id, user.isAdmin, refreshToken);
+    return this._authService.refreshAccessToken(
+      user.id,
+      user.isAdmin,
+      refreshToken,
+    );
   }
 }
