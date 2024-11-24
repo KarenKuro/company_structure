@@ -18,10 +18,11 @@ import {
 import { join } from 'path';
 
 import { EmployeeModule } from '@admin-resources/employee';
+import { DepartmentModule } from '@admin-resources/department';
+
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { AuthModule } from './resources/auth/auth.module';
-import { DepartmentModule } from '@admin-resources/department';
 
 const isProductionMode = process.env.NODE_ENV === NodeEnv.production;
 
